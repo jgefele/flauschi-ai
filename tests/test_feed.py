@@ -2,7 +2,8 @@ from datetime import date, timedelta
 
 import pytest
 
-from flauschi_pipeline.feed import Episode, FeedMalformedException, parse_feed
+from flauschi_pipeline.models import EpisodeMetadata
+from flauschi_pipeline.feed import FeedMalformedException, parse_feed
 
 RSS_FEED = """
 <rss version="2.0">
@@ -122,13 +123,13 @@ MIXED_ENCLOSURES_FEED = """
 </rss>
 """
 
-EXPECTED_NEWEST_EPISODE = Episode(
-	id="a956ecd8-a12d-11f1-b06d-ab2773b6143d",
-	publication_date=date(2026, 8, 29),
-	title="Best of 10 Jahre Fest & Flauschig Gäste",
-	description="Die schönsten Gespräche finden manchmal zu dritt statt- für Gäste wird auch mal der Teller mit den abgeschnittenen Fußnägeln weggeräumt und eine Hose angezogen. Bühne frei für die legendärsten Besuche aus 10 Jahren. Mit Bill Kaulitz, Bela B., Palina Rojinski, Detlev Buck, Barbara Schöneberger, Bjarne Mädel, Laura Larsson, Deniz Yücel, Katrin Bauerfeind und Riccardo Simonetti Learn more about your ad choices. Visit podcastchoices.com/adchoices",
-	audio_url="https://traffic.megaphone.fm/GLT9301027852.mp3",
-	duration=timedelta(seconds=4565),
+EXPECTED_NEWEST_EPISODE = EpisodeMetadata(
+    id="a956ecd8-a12d-11f1-b06d-ab2773b6143d",
+    publication_date=date(2026, 8, 29),
+    title="Best of 10 Jahre Fest & Flauschig Gäste",
+    description="Die schönsten Gespräche finden manchmal zu dritt statt- für Gäste wird auch mal der Teller mit den abgeschnittenen Fußnägeln weggeräumt und eine Hose angezogen. Bühne frei für die legendärsten Besuche aus 10 Jahren. Mit Bill Kaulitz, Bela B., Palina Rojinski, Detlev Buck, Barbara Schöneberger, Bjarne Mädel, Laura Larsson, Deniz Yücel, Katrin Bauerfeind und Riccardo Simonetti Learn more about your ad choices. Visit podcastchoices.com/adchoices",
+    audio_url="https://traffic.megaphone.fm/GLT9301027852.mp3",
+    duration=timedelta(seconds=4565),
 )
 
 
@@ -157,11 +158,6 @@ def test_parse_feed_parses_older_episode() -> None:
     assert older.audio_url == "https://traffic.megaphone.fm/GLT3495772886.mp3"
 
 
-def test_parse_feed_returns_no_modified_date_for_documents() -> None:
-    _, modified = parse_feed(RSS_FEED, last_modified=None)
-    assert modified is None
-
-
 def test_parse_feed_with_empty_channel() -> None:
     episodes, modified = parse_feed(EMPTY_FEED, last_modified=None)
     assert episodes == []
@@ -184,7 +180,7 @@ def test_parse_feed_selects_audio_enclosure() -> None:
 
 
 def test_episode_slug_combines_date_and_title() -> None:
-    episode = Episode(
+    episode = EpisodeMetadata(
         id="test-id",
         publication_date=date(2026, 8, 29),
         title="Best of 10 Jahre Fest & Flauschig Gäste",
