@@ -6,7 +6,7 @@ from pydantic import BaseModel
 from flauschi_pipeline.utils import slugify
 
 
-class Episode(BaseModel):
+class EpisodeMetadata(BaseModel):
     id: str
     publication_date: date
     title: str
@@ -40,12 +40,13 @@ def _get_audio_url(entry) -> str:
         raise FeedMalformedException("No audio file present")
 
 
-def parse_feed(url: str, last_modified: str | None) -> tuple[list[Episode], str]:
+def parse_feed(
+    url: str, last_modified: str | None
+) -> tuple[list[EpisodeMetadata], str]:
     feed = feedparser.parse(url, modified=last_modified)
 
-    episodes: list[Episode] = []
-    for entry in feed.entries:
-        record = Episode(
+    episodes = (
+        EpisodeMetadata(
             title=entry.title,
             description=entry.description,
             publication_date=_get_pubdate(entry),
@@ -53,8 +54,10 @@ def parse_feed(url: str, last_modified: str | None) -> tuple[list[Episode], str]
             audio_url=_get_audio_url(entry),
             id=entry.id,
         )
-        episodes.append(record)
+        for entry in feed.entries
+    )
 
-    return sorted(episodes, key=lambda r: r.publication_date, reverse=True), feed.get(
-        "modified"
+    return (
+        sorted(episodes, key=lambda r: r.publication_date, reverse=True),
+        feed.get("modified"),
     )
