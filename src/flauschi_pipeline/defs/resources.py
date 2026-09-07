@@ -1,8 +1,7 @@
-from pathlib import Path
 from typing import Any
 
 import dagster as dg
-
+from dagster_aws.s3 import S3Resource
 from pydantic import BaseModel
 from upath import UPath
 
@@ -32,7 +31,7 @@ class PydanticUPathIOManager(dg.UPathIOManager):
         if not isinstance(obj, BaseModel):
             raise TypeError(
                 f"PydanticUPathIOManager expected a pydantic BaseModel, got {type(obj)}. "
-                "Set the asset's return type annotation to `None` if it produces no value."
+                + "Set the asset's return type annotation to `None` if it produces no value."
             )
         path.write_text(obj.model_dump_json(), encoding="utf-8")
 
@@ -41,7 +40,7 @@ class PydanticUPathIOManager(dg.UPathIOManager):
         if model_type is None:
             raise TypeError(
                 "Could not resolve a pydantic model type from the upstream annotation. "
-                "Annotate the upstream asset with `-> MyModel` or `-> Optional[MyModel]`."
+                + "Annotate the upstream asset with `-> MyModel` or `-> Optional[MyModel]`."
             )
 
         return model_type.model_validate_json(path.read_text(encoding="utf-8"))
@@ -59,6 +58,12 @@ class PydanticUPathIOManager(dg.UPathIOManager):
 @dg.definitions
 def resources():
     return dg.Definitions(
-        # Define the I/O manager and pass it to `Definitions`
-        resources={"io_manager": PydanticUPathIOManager(UPath(PROJECT_PATH / "data"))}
+        resources={
+            "io_manager": PydanticUPathIOManager(UPath(PROJECT_PATH / "data")),
+            "s3": S3Resource(
+                aws_access_key_id=dg.EnvVar("S3_ACCESS_KEY_ID"),
+                aws_secret_access_key=dg.EnvVar("S3_SECRET_ACCESS_KEY"),
+                endpoint_url=dg.EnvVar("S3_ENDPOINT_URL"),
+            ),
+        }
     )

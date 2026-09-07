@@ -3,8 +3,11 @@ name = "flauschi_pipeline"
 requires-python = ">=3.10,<3.15"
 version = "0.1.0"
 dependencies = [
+    "boto3>=1.43.89",
     "dagster==1.13.21",
+    "dagster-aws>=0.29.21",
     "feedparser>=6.0.14",
+    "types-boto3-lite[s3]>=1.43.89",
     "universal-pathlib>=0.3.10",
 ]
 
