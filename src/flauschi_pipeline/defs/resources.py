@@ -1,5 +1,7 @@
 from typing import Any
 
+import assemblyai as aai
+from assemblyai.sync.v1 import api
 import dagster as dg
 from dagster_aws.s3 import S3Resource
 from pydantic import BaseModel
@@ -33,7 +35,10 @@ class PydanticUPathIOManager(dg.UPathIOManager):
                 f"PydanticUPathIOManager expected a pydantic BaseModel, got {type(obj)}. "
                 + "Set the asset's return type annotation to `None` if it produces no value."
             )
-        path.write_text(obj.model_dump_json(), encoding="utf-8")
+        path.write_text(
+            obj.model_dump_json(exclude_defaults=True),
+            encoding="utf-8",
+        )
 
     def load_from_path(self, context: dg.InputContext, path: UPath) -> Any:
         model_type = self._resolve_model_type(context)
@@ -55,6 +60,13 @@ class PydanticUPathIOManager(dg.UPathIOManager):
         }
 
 
+class AssemblyAIResource(dg.ConfigurableResource):
+    api_key: str
+
+    def get_client(self) -> aai.Transcriber:
+        return aai.Transcriber(client=aai.Client(api_key=self.api_key))
+
+
 @dg.definitions
 def resources():
     return dg.Definitions(
@@ -65,5 +77,6 @@ def resources():
                 aws_secret_access_key=dg.EnvVar("S3_SECRET_ACCESS_KEY"),
                 endpoint_url=dg.EnvVar("S3_ENDPOINT_URL"),
             ),
+            "aai": AssemblyAIResource(api_key=dg.EnvVar("ASSEMBLYAI_API_KEY")),
         }
     )
