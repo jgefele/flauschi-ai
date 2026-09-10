@@ -66,6 +66,7 @@ def archive_url_to_s3(
                     multipart_threshold=chunksize,
                     multipart_chunksize=chunksize,
                     use_threads=False,
+                    max_bandwidth=10 * 1024 * 1024,
                 ),
                 Callback=_callback,
             )
