@@ -82,6 +82,11 @@ def archive_url_to_s3(
 @dg.asset(
     pool="large_s3_upload",
     partitions_def=episode_partition,
+    automation_condition=dg.AutomationCondition.on_missing().replace(
+        "handled",
+        dg.AutomationCondition.newly_requested()
+        | dg.AutomationCondition.newly_updated(),
+    ),
 )
 def audio_archive(
     context: dg.AssetExecutionContext,
