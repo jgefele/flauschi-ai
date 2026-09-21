@@ -3,7 +3,6 @@ from datetime import date, timedelta
 import feedparser
 
 from flauschi_pipeline.models import EpisodeMetadata
-from flauschi_pipeline.utils import slugify
 
 
 class FeedMalformedException(Exception):
