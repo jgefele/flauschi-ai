@@ -1,13 +1,12 @@
 from typing import Any
 
 import assemblyai as aai
-from assemblyai.sync.v1 import api
 import dagster as dg
 from dagster_aws.s3 import S3Resource
 from pydantic import BaseModel
 from upath import UPath
 
-from flauschi_pipeline.constants import PROJECT_PATH
+from flauschi_pipeline.constants import DATA_PATH
 
 
 class PydanticUPathIOManager(dg.UPathIOManager):
@@ -71,7 +70,7 @@ class AssemblyAIResource(dg.ConfigurableResource):
 def resources():
     return dg.Definitions(
         resources={
-            "io_manager": PydanticUPathIOManager(UPath(PROJECT_PATH / "data")),
+            "io_manager": PydanticUPathIOManager(UPath(DATA_PATH)),
             "s3": S3Resource(
                 aws_access_key_id=dg.EnvVar("S3_ACCESS_KEY_ID"),
                 aws_secret_access_key=dg.EnvVar("S3_SECRET_ACCESS_KEY"),
