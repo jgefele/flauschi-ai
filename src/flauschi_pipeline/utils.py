@@ -1,5 +1,6 @@
 import re
 import unicodedata
+from datetime import timedelta
 
 
 def slugify(text: str, lower: bool = True, max_length: int | None = None) -> str:
@@ -28,3 +29,16 @@ def slugify(text: str, lower: bool = True, max_length: int | None = None) -> str
         text = text[:max_length]
     text = text.strip(SEPARATOR)
     return text
+
+
+def clamp(value: int, lower_limit: int, upper_limit: int) -> int:
+    return max(lower_limit, min(value, upper_limit))
+
+
+def format_timecode(d: timedelta) -> str:
+    mm, ss = divmod(d.seconds, 60)
+    hh, mm = divmod(mm, 60)
+    if hh:
+        return f"{hh:d}:{mm:02d}:{ss:02d}"
+    else:
+        return f"{mm:d}:{ss:02d}"

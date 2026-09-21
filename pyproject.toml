@@ -8,6 +8,8 @@ dependencies = [
     "dagster==1.13.21",
     "dagster-aws>=0.29.21",
     "feedparser>=6.0.14",
+    "tiktoken>=0.14.0",
+    "transformers>=5.17.0",
     "types-boto3-lite[s3]>=1.43.89",
     "universal-pathlib>=0.3.10",
 ]
@@ -17,6 +19,7 @@ dev = [
     "dagster-dg-cli",
     "dagster-webserver",
     "pytest>=9.1.1",
+    "pytest-timeout>=2.4.0",
 ]
 
 [build-system]
