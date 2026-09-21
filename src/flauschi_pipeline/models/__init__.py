@@ -1,6 +1,6 @@
 from .assembly_ai_transcript import AssemblyAiTranscript
 from .audio_archive_metadata import AudioArchiveMetadata
-from .episode import Episode, EpisodeSentence, EpisodeSpeakerBlock, EpisodeTranscript
+from .episode import Episode, EpisodeSentence, EpisodeSpeakerTurn, EpisodeTranscript
 from .episode_metadata import EpisodeMetadata
 
 __all__ = [
@@ -9,6 +9,6 @@ __all__ = [
     "Episode",
     "EpisodeMetadata",
     "EpisodeSentence",
-    "EpisodeSpeakerBlock",
+    "EpisodeSpeakerTurn",
     "EpisodeTranscript",
 ]

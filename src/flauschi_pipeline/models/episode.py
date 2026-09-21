@@ -1,6 +1,6 @@
 from datetime import timedelta
 
-from pydantic import BaseModel
+from pydantic import BaseModel, Field
 
 from flauschi_pipeline.models.episode_metadata import EpisodeMetadata
 
@@ -11,7 +11,7 @@ class EpisodeSentence(BaseModel):
     text: str
 
 
-class EpisodeSpeakerBlock(BaseModel):
+class EpisodeSpeakerTurn(BaseModel):
     speaker_id: int
     sentences: list[EpisodeSentence]
 
@@ -30,7 +30,7 @@ class EpisodeSpeakerBlock(BaseModel):
 
 class EpisodeTranscript(BaseModel):
     speakers: dict[int, str]
-    speaker_blocks: list[EpisodeSpeakerBlock]
+    speaker_turns: list[EpisodeSpeakerTurn] = Field(validation_alias="speaker_blocks")
 
 
 class Episode(EpisodeMetadata):

@@ -6,7 +6,7 @@ from flauschi_pipeline.models import (
     Episode,
     EpisodeMetadata,
     EpisodeSentence,
-    EpisodeSpeakerBlock,
+    EpisodeSpeakerTurn,
     EpisodeTranscript,
 )
 
@@ -34,8 +34,8 @@ def export_episode(
             speakers[index] = speaker_mapping.get(label, label)
         return speaker_ids[label]
 
-    speaker_blocks: list[EpisodeSpeakerBlock] = []
-    current: EpisodeSpeakerBlock | None = None
+    speaker_turns: list[EpisodeSpeakerTurn] = []
+    current: EpisodeSpeakerTurn | None = None
 
     for sentence in transcript.sentences:
         sentence_model = EpisodeSentence(
@@ -47,11 +47,11 @@ def export_episode(
         sid = speaker_id_for(label)
 
         if current is None or current.speaker_id != sid:
-            current = EpisodeSpeakerBlock(
+            current = EpisodeSpeakerTurn(
                 speaker_id=sid,
                 sentences=[sentence_model],
             )
-            speaker_blocks.append(current)
+            speaker_turns.append(current)
         else:
             current.sentences.append(sentence_model)
 
@@ -66,6 +66,6 @@ def export_episode(
         audio_archive_url=audio_archive.archive_url,
         transcript=EpisodeTranscript(
             speakers=speakers,
-            speaker_blocks=speaker_blocks,
+            speaker_turns=speaker_turns,
         ),
     )
