@@ -20,7 +20,8 @@ def retrieve(query: str, k: int = 4) -> DocumentsWithScores:
 
 @click.command()
 @click.argument("query", required=True)
-def main(query: str):
+@click.option("--k", default=4)
+def main(query: str, k: int):
     """Retrieve documents matching QUERY.
 
     QUERY is a search string. If QUERY is "-", the query is read from stdin.
@@ -28,7 +29,7 @@ def main(query: str):
     if query == "-":
         query = "\n".join(sys.stdin.readlines())
 
-    for document, score in retrieve(query):
+    for document, score in retrieve(query, k):
         metadata = ChunkMetadata.model_validate(document.metadata)
         print(f"# {metadata.title} ({metadata.publication_date})")
         print(f"*{format_timecode(metadata.start)}-{format_timecode(metadata.end)}*")
