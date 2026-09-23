@@ -1,3 +1,4 @@
+import os
 import sys
 from collections.abc import Callable
 from dataclasses import dataclass
@@ -5,6 +6,7 @@ from datetime import timedelta
 from pathlib import Path
 from typing import cast
 
+os.environ["TRANSFORMERS_NO_ADVISORY_WARNINGS"] = "1"
 from transformers import AutoTokenizer, PreTrainedTokenizerBase
 
 from flauschi_pipeline.constants import EPISODE_PATH
