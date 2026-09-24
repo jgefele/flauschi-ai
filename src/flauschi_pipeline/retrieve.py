@@ -6,9 +6,9 @@ import sys
 import click
 from langchain_core.documents.base import Document
 
-from flauschi_pipeline.ingest import ChunkMetadata
 from flauschi_pipeline.utils import format_timecode
 from flauschi_pipeline.vectorstore import get_vectorstore
+from flauschi_pipeline.models import ChunkMetadata
 
 DocumentsWithScores = list[tuple[Document, float]]
 

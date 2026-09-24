@@ -1,42 +1,15 @@
 import re
 from collections.abc import Generator
-from datetime import date, timedelta
-from typing import Annotated
 
 import click
 from langchain_core.documents import Document
 from langchain_core.vectorstores import VectorStore
-from pydantic import BaseModel, BeforeValidator, PlainSerializer
 
 from flauschi_pipeline.chunker import Chunk, TurnBasedChunker
 from flauschi_pipeline.constants import EPISODE_PATH
-from flauschi_pipeline.models import Episode
+from flauschi_pipeline.models import Episode, ChunkMetadata
 from flauschi_pipeline.persistence import load_episode
 from flauschi_pipeline.vectorstore import get_vectorstore
-
-
-def parse_timedelta_seconds(v: float | timedelta) -> timedelta:
-    if isinstance(v, timedelta):
-        return v
-    return timedelta(seconds=v)
-
-
-def serialize_timedelta_seconds(td: timedelta) -> float:
-    return td.total_seconds()
-
-
-TimedeltaAsTotalSecondsInt = Annotated[
-    timedelta,
-    BeforeValidator(parse_timedelta_seconds),
-    PlainSerializer(serialize_timedelta_seconds),
-]
-
-
-class ChunkMetadata(BaseModel):
-    publication_date: date
-    title: str
-    start: TimedeltaAsTotalSecondsInt
-    end: TimedeltaAsTotalSecondsInt
 
 
 def _to_document(episode: Episode, chunk: Chunk) -> Document:
