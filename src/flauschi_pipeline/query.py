@@ -7,13 +7,24 @@ import click
 from langchain_core.messages import HumanMessage, SystemMessage, AIMessageChunk
 from langchain_openrouter import ChatOpenRouter
 
+from flauschi_pipeline.utils import CLICK_DATE_PARAM
 from retrieve import retrieve
 
 
 @click.command()
 @click.argument("query", required=True)
 @click.option("--k", default=4)
-def main(query: str, k: int):
+@click.option(
+    "--published-after",
+    type=CLICK_DATE_PARAM,
+    default=None,
+)
+@click.option(
+    "--published-before",
+    type=CLICK_DATE_PARAM,
+    default=None,
+)
+def main(query: str, k: int, published_after: date | None, published_before: date | None):
     """Answer questions for QUERY.
 
     QUERY is a search string. If QUERY is "-", the query is read from stdin.
@@ -21,7 +32,7 @@ def main(query: str, k: int):
     if query == "-":
         query = "\n".join(sys.stdin.readlines())
 
-    docs, _scores = zip(*retrieve(query, k))
+    docs, _scores = zip(*retrieve(query, k, published_after, published_before))
 
     model = ChatOpenRouter(
         model="z-ai/glm-5.3-flash",
