@@ -1,8 +1,10 @@
 import json
 import sys
+from datetime import date
+from typing import Literal
 
 import click
-from langchain_core.messages import AIMessage, HumanMessage, SystemMessage
+from langchain_core.messages import HumanMessage, SystemMessage, AIMessageChunk
 from langchain_openrouter import ChatOpenRouter
 
 from retrieve import retrieve
@@ -48,21 +50,34 @@ def main(query: str, k: int):
         HumanMessage(query),
     )
 
-    response: AIMessage = model.invoke(messages)
-    reasoning_content = response.additional_kwargs.pop("reasoning_content")
-    _ = response.additional_kwargs.pop("reasoning_details")
-    print("## Meta")
-    print("```json")
-    print(json.dumps(response.response_metadata, indent=2))
-    if response.additional_kwargs:
-        print(json.dumps(response.additional_kwargs, indent=2))
-    print("```")
-    print()
-    print("## Reasoning")
-    print(reasoning_content)
-    print()
-    print("## Answer")
-    print(response.content)
+
+    state: Literal['INIT'] | Literal['REASONING'] | Literal['ANSWER'] = 'INIT'
+    full_response: AIMessageChunk | None = None
+    for chunk in model.stream(messages):
+        full_response = full_response + chunk if full_response else chunk
+
+        reasoning = chunk.additional_kwargs.get("reasoning_content")
+        if reasoning:
+            assert state in ('INIT','REASONING')
+            if state == 'INIT':
+                print("## Reasoning\n")
+                state = 'REASONING'
+            print(reasoning, end="", flush=True)
+
+        if chunk.content:
+            if state in ('INIT','REASONING'):
+                print("\n\n## Answer\n")
+                state = 'ANSWER'
+
+            print(chunk.content, end="", flush=True)
+
+    print("\n")
+
+    if full_response:
+        print("## Meta")
+        print("```json")
+        print(json.dumps(full_response.response_metadata, indent=2))
+        print("```")
 
 
 if __name__ == "__main__":
