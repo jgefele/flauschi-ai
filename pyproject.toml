@@ -29,6 +29,7 @@ dev = [
     "dagster-webserver",
     "pytest>=9.1.1",
     "pytest-timeout>=2.4.0",
+    "streamlit>=1.49.0",
 ]
 
 [build-system]
