@@ -15,12 +15,18 @@ st.session_state.setdefault("last_params", None)
 st.session_state.setdefault("searched", False)
 
 
+@st.cache_resource(show_spinner="Loading vector store…")
+def get_vector_store() -> FlauschiVectorStore:
+    return FlauschiVectorStore.default()
+
+
 @st.cache_data(ttl="1h", max_entries=100, show_spinner="Retrieving chunks…")
 def cached_retrieve(
     query: str, k: int, published_after: date | None, published_before: date | None
 ) -> DocumentsWithScores:
-    store = FlauschiVectorStore.default()
-    return store.retrieve(query, k, published_after, published_before)
+    return get_vector_store().retrieve(
+        query, k, published_after, published_before
+    )
 
 
 st.title("Flauschi retrieval", icon=":material/mic:")
