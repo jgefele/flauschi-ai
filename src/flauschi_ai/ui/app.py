@@ -3,7 +3,7 @@ from datetime import date
 import streamlit as st
 
 from flauschi_ai.models import ChunkMetadata
-from flauschi_ai.retrieve import DocumentsWithScores, retrieve
+from flauschi_ai.vectorstore import DocumentsWithScores, FlauschiVectorStore
 from flauschi_ai.utils import format_timecode
 
 st.set_page_config(
@@ -19,7 +19,8 @@ st.session_state.setdefault("searched", False)
 def cached_retrieve(
     query: str, k: int, published_after: date | None, published_before: date | None
 ) -> DocumentsWithScores:
-    return retrieve(query, k, published_after, published_before)
+    store = FlauschiVectorStore.default()
+    return store.retrieve(query, k, published_after, published_before)
 
 
 st.title("Flauschi retrieval", icon=":material/mic:")

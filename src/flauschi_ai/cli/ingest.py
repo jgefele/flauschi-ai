@@ -1,4 +1,4 @@
-from flauschi_ai.ingest import ingest
+from flauschi_ai.vectorstore import FlauschiVectorStore
 
 import click
 
@@ -11,4 +11,4 @@ import click
 )
 def ingest_command(pattern: str):
     """Index episodes into the vector store."""
-    ingest(pattern)
+    FlauschiVectorStore.default().ingest(pattern)

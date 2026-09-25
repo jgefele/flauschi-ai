@@ -10,7 +10,7 @@ from langchain_openrouter import ChatOpenRouter
 from flauschi_ai.cli.params import CLICK_DATE_PARAM
 from flauschi_ai.cli.utils import read_query
 from flauschi_ai.constants import DEFAULT_TOP_K
-from flauschi_ai.retrieve import retrieve
+from flauschi_ai.vectorstore import FlauschiVectorStore
 
 
 @click.command("rag")
@@ -32,7 +32,8 @@ def rag_command(query: str, top_k: int, published_after: date | None, published_
     QUERY is a search string. If QUERY is "-", the query is read from stdin.
     """
     query = read_query(query)
-    docs, _scores = zip(*retrieve(query, top_k, published_after, published_before))
+    store = FlauschiVectorStore.default()
+    docs, _scores = zip(*store.retrieve(query, top_k, published_after, published_before))
 
     model = ChatOpenRouter(
         model="z-ai/glm-5.3-flash",
