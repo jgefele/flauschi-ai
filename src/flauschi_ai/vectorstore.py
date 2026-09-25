@@ -5,6 +5,7 @@ from typing import cast
 
 from dotenv import load_dotenv
 from langchain_core.documents import Document
+from langchain_core.runnables import ConfigurableField
 from langchain_core.utils import secret_from_env
 from langchain_core.vectorstores import VectorStore
 from langchain_openai import OpenAIEmbeddings
@@ -38,10 +39,15 @@ from flauschi_ai.persistence import load_episodes
 CHUNK_METADATA_PUBLICATION_DATE = "publication_date"
 VECTORSTORE_METADATA_PUBLICATION_DATE = f"metadata.{CHUNK_METADATA_PUBLICATION_DATE}"
 
-DocumentsWithScores = list[tuple[Document, float]]
-
 
 class FlauschiVectorStore:
+    collection_name: str
+    embedding_model: str
+    embedding_size: int
+    tokenization_model: str
+    max_tokens_per_chunk: int
+    overlap_tokens_per_chunk: int
+
     def __init__(
         self,
         collection_name: str,
@@ -69,7 +75,7 @@ class FlauschiVectorStore:
             overlap_tokens_per_chunk=DEFAULT_OVERLAP_TOKENS_PER_CHUNK,
         )
 
-    def _collection_metadata(self) -> dict:
+    def _collection_metadata(self) -> dict[str, str | int]:
         return {
             "collection_name": self.collection_name,
             "embedding_model": self.embedding_model,
@@ -82,8 +88,7 @@ class FlauschiVectorStore:
     def drop_collection_if_exists(self) -> bool:
         client = QdrantClient(path=str(QDRANT_PATH))
         if client.collection_exists(self.collection_name):
-            client.delete_collection(collection_name=self.collection_name)
-            return True
+            return client.delete_collection(collection_name=self.collection_name)
         return False
 
     def _load(self) -> QdrantVectorStore:
@@ -130,7 +135,7 @@ class FlauschiVectorStore:
                     )
                     raise ValueError(
                         f"Collection {self.collection_name} was created with a "
-                        f"different configuration: {details}"
+                        + f"different configuration: {details}"
                     )
 
         embeddings = OpenAIEmbeddings(
@@ -138,7 +143,7 @@ class FlauschiVectorStore:
             base_url=OPENROUTER_BASE_URL,
             api_key=secret_from_env("OPENROUTER_API_KEY")(),
             # length check doesn't work with non-OpenAI embeddings via OpenRouter as it uses wrong tokenizer
-            check_embedding_ctx_length=True if self.embedding_model.startswith("openai/") else False,
+            check_embedding_ctx_length=bool(self.embedding_model.startswith("openai/")),
         )
         return QdrantVectorStore(
             client=client,
@@ -190,17 +195,15 @@ class FlauschiVectorStore:
         for episode in load_episodes(pattern):
             self._ingest_episode(episode)
 
-    def retrieve(
-        self,
-        query: str,
-        k: int,
+    @staticmethod
+    def build_filter(
         published_after: date | None,
         published_before: date | None,
-    ) -> DocumentsWithScores:
-        date_filter = Filter(
+    ):
+        return Filter(
             must=[
                 FieldCondition(
-                    key=VECTORSTORE_METADATA_PUBLICATION_DATE,  # LangChain nests payload under 'metadata'
+                    key=VECTORSTORE_METADATA_PUBLICATION_DATE,
                     range=DatetimeRange(
                         gte=published_after,
                         lte=published_before,
@@ -208,6 +211,23 @@ class FlauschiVectorStore:
                 )
             ]
         )
-        return self.vector_store.similarity_search_with_relevance_scores(
-            query, k, filter=date_filter
+
+    def as_configurable_retriever(self):
+        return self.vector_store.as_retriever().configurable_fields(
+            search_kwargs=ConfigurableField(
+                id="search_kwargs",
+                name="Search kwargs",
+                description="k and metadata filter for retrieval",
+            )
+        )
+
+    def retrieve(
+        self,
+        query: str,
+        k: int,
+        published_after: date | None,
+        published_before: date | None,
+    ) -> list[Document]:
+        return self.vector_store.similarity_search(
+            query, k, filter=self.build_filter(published_after, published_before)
         )

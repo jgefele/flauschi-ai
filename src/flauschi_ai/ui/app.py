@@ -1,9 +1,10 @@
 from datetime import date
 
 import streamlit as st
+from langchain_core.documents import Document
 
 from flauschi_ai.models import ChunkMetadata
-from flauschi_ai.vectorstore import DocumentsWithScores, FlauschiVectorStore
+from flauschi_ai.vectorstore import FlauschiVectorStore
 from flauschi_ai.utils import format_timecode
 
 st.set_page_config(
@@ -23,10 +24,8 @@ def get_vector_store() -> FlauschiVectorStore:
 @st.cache_data(ttl="1h", max_entries=100, show_spinner="Retrieving chunks…")
 def cached_retrieve(
     query: str, k: int, published_after: date | None, published_before: date | None
-) -> DocumentsWithScores:
-    return get_vector_store().retrieve(
-        query, k, published_after, published_before
-    )
+) -> list[Document]:
+    return get_vector_store().retrieve(query, k, published_after, published_before)
 
 
 st.title("Flauschi retrieval", icon=":material/mic:")
@@ -64,7 +63,7 @@ with st.form("search_form", border=False):
 
 query = query.strip()
 params = (query, k, published_after, published_before)
-results: DocumentsWithScores | None = st.session_state["results"]
+results: list[Document] | None = st.session_state["results"]
 last_params = st.session_state["last_params"]
 
 should_search = bool(query) and (
@@ -108,7 +107,7 @@ if not results:
 
 with results_slot:
     st.subheader(f"{len(results)} chunks", icon=":material/article:")
-    for rank, (document, score) in enumerate(results, start=1):
+    for rank, document in enumerate(results, start=1):
         metadata = ChunkMetadata.model_validate(document.metadata)
         with st.container(border=True):
             st.markdown(f"#### {rank}. {metadata.title}")
@@ -116,5 +115,4 @@ with results_slot:
                 f"{metadata.publication_date.isoformat()} · "
                 f"{format_timecode(metadata.start)} – {format_timecode(metadata.end)}"
             )
-            st.progress(min(max(score, 0.0), 1.0), text=f"Relevance score: {score:.3f}")
             st.markdown(document.page_content.replace("\n", "\n\n"))

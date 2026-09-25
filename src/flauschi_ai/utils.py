@@ -1,9 +1,10 @@
 import re
 import unicodedata
 from datetime import timedelta
+from typing import Any
 
 
-def slugify(text: str, lower: bool = True, max_length: int | None = None) -> str:
+def slugify(*elements: Any, lower: bool = True, max_length: int | None = None) -> str:  # pyright: ignore[reportExplicitAny, reportAny]
     SEPARATOR = "-"
     UMLAUTS = str.maketrans(
         {
@@ -18,6 +19,7 @@ def slugify(text: str, lower: bool = True, max_length: int | None = None) -> str
         }
     )
 
+    text = "-".join(map(str, elements))
     text = text.translate(UMLAUTS)
     text = unicodedata.normalize("NFKD", text)
     text = "".join(c for c in text if not unicodedata.combining(c))

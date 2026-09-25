@@ -15,4 +15,4 @@ class EpisodeMetadata(BaseModel):
 
     @property
     def slug(self) -> str:
-        return slugify(f"{self.publication_date.isoformat()}-{self.title}")
+        return slugify(self.publication_date.isoformat(), self.title)
