@@ -2,8 +2,8 @@ from datetime import date, timedelta
 
 import pytest
 
-from flauschi_pipeline.models import EpisodeMetadata
-from flauschi_pipeline.feed import FeedMalformedException, parse_feed
+from flauschi_ai.models import EpisodeMetadata
+from flauschi_ai.feed import FeedMalformedException, parse_feed
 
 RSS_FEED = """
 <rss version="2.0">

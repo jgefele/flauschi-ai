@@ -2,8 +2,8 @@ from datetime import timedelta
 
 import pytest
 
-from flauschi_pipeline.chunker import TurnBasedChunker
-from flauschi_pipeline.models import (
+from flauschi_ai.chunker import TurnBasedChunker
+from flauschi_ai.models import (
     EpisodeSentence,
     EpisodeSpeakerTurn,
     EpisodeTranscript,

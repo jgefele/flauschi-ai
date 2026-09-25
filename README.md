@@ -1,4 +1,4 @@
-# flauschi_pipeline
+# flauschi_ai
 
 ## Getting started
 

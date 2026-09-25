@@ -1,5 +1,5 @@
 [project]
-name = "flauschi_pipeline"
+name = "flauschi_ai"
 requires-python = ">=3.10,<3.15"
 version = "0.1.0"
 dependencies = [
@@ -43,9 +43,9 @@ force-include = { "pyproject.toml" = "pyproject.toml" }
 directory_type = "project"
 
 [tool.dg.project]
-root_module = "flauschi_pipeline"
+root_module = "flauschi_ai"
 registry_modules = [
-    "flauschi_pipeline.components.*",
+    "flauschi_ai.components.*",
 ]
 
 

@@ -1,8 +1,8 @@
 import dagster as dg
 
-from flauschi_pipeline.defs.common import episode_partition
-from flauschi_pipeline.episode import export_episode
-from flauschi_pipeline.models import (
+from flauschi_ai.defs.common import episode_partition
+from flauschi_ai.episode import export_episode
+from flauschi_ai.models import (
     AssemblyAiTranscript,
     AudioArchiveMetadata,
     Episode,

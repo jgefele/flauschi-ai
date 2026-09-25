@@ -2,7 +2,7 @@ from datetime import date, timedelta
 
 from pydantic import BaseModel
 
-from flauschi_pipeline.utils import slugify
+from flauschi_ai.utils import slugify
 
 
 class EpisodeMetadata(BaseModel):

@@ -9,10 +9,10 @@ from typing import cast
 os.environ["TRANSFORMERS_NO_ADVISORY_WARNINGS"] = "1"
 from transformers import AutoTokenizer, PreTrainedTokenizerBase
 
-from flauschi_pipeline.constants import EPISODE_PATH
-from flauschi_pipeline.models import EpisodeTranscript
-from flauschi_pipeline.persistence import load_episode
-from flauschi_pipeline.utils import clamp
+from flauschi_ai.constants import EPISODE_PATH
+from flauschi_ai.models import EpisodeTranscript
+from flauschi_ai.persistence import load_episode
+from flauschi_ai.utils import clamp
 
 
 @dataclass

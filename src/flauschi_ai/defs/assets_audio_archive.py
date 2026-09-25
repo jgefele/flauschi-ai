@@ -8,8 +8,8 @@ from botocore.response import StreamingBody
 from dagster_aws.s3 import S3Resource
 from types_boto3_s3 import S3Client
 
-from flauschi_pipeline.defs.common import episode_partition
-from flauschi_pipeline.models import AudioArchiveMetadata, EpisodeMetadata
+from flauschi_ai.defs.common import episode_partition
+from flauschi_ai.models import AudioArchiveMetadata, EpisodeMetadata
 
 
 def _content_length(response: requests.Response) -> int | None:

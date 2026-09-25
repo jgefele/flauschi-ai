@@ -2,7 +2,7 @@ from datetime import timedelta
 
 from pydantic import BaseModel, Field
 
-from flauschi_pipeline.models.episode_metadata import EpisodeMetadata
+from flauschi_ai.models.episode_metadata import EpisodeMetadata
 
 
 class EpisodeSentence(BaseModel):

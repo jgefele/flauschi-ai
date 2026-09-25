@@ -2,9 +2,9 @@ from datetime import date
 
 import streamlit as st
 
-from flauschi_pipeline.models import ChunkMetadata
-from flauschi_pipeline.retrieve import DocumentsWithScores, retrieve
-from flauschi_pipeline.utils import format_timecode
+from flauschi_ai.models import ChunkMetadata
+from flauschi_ai.retrieve import DocumentsWithScores, retrieve
+from flauschi_ai.utils import format_timecode
 
 st.set_page_config(
     page_title="Flauschi retrieval", page_icon=":material/mic:", layout="wide"

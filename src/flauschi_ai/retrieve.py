@@ -6,9 +6,9 @@ import click
 from langchain_core.documents.base import Document
 from qdrant_client.models import Filter, FieldCondition, DatetimeRange
 
-from flauschi_pipeline.models import ChunkMetadata
-from flauschi_pipeline.utils import format_timecode, CLICK_DATE_PARAM
-from flauschi_pipeline.vectorstore import get_vectorstore, VECTORSTORE_METADATA_PUBLICATION_DATE
+from flauschi_ai.models import ChunkMetadata
+from flauschi_ai.utils import format_timecode, CLICK_DATE_PARAM
+from flauschi_ai.vectorstore import get_vectorstore, VECTORSTORE_METADATA_PUBLICATION_DATE
 
 DocumentsWithScores = list[tuple[Document, float]]
 

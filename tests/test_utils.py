@@ -1,4 +1,4 @@
-from flauschi_pipeline.utils import slugify
+from flauschi_ai.utils import slugify
 
 
 def test_umlauts_lower_case() -> None:

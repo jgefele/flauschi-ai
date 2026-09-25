@@ -6,7 +6,7 @@ from dagster_aws.s3 import S3Resource
 from pydantic import BaseModel
 from upath import UPath
 
-from flauschi_pipeline.constants import DATA_PATH
+from flauschi_ai.constants import DATA_PATH
 
 
 class PydanticUPathIOManager(dg.UPathIOManager):

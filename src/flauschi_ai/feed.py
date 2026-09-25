@@ -2,7 +2,7 @@ from datetime import date, timedelta
 
 import feedparser
 
-from flauschi_pipeline.models import EpisodeMetadata
+from flauschi_ai.models import EpisodeMetadata
 
 
 class FeedMalformedException(Exception):

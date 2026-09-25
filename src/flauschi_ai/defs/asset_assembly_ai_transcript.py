@@ -2,9 +2,9 @@ import assemblyai
 import dagster as dg
 from assemblyai.prerecorded.v2.transcript import Transcript
 
-from flauschi_pipeline.defs.common import episode_partition
-from flauschi_pipeline.defs.resources import AssemblyAIResource
-from flauschi_pipeline.models import (
+from flauschi_ai.defs.common import episode_partition
+from flauschi_ai.defs.resources import AssemblyAIResource
+from flauschi_ai.models import (
     AssemblyAiTranscript,
     AudioArchiveMetadata,
 )

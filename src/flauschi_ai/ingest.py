@@ -5,11 +5,11 @@ import click
 from langchain_core.documents import Document
 from langchain_core.vectorstores import VectorStore
 
-from flauschi_pipeline.chunker import Chunk, TurnBasedChunker
-from flauschi_pipeline.constants import EPISODE_PATH
-from flauschi_pipeline.models import Episode, ChunkMetadata
-from flauschi_pipeline.persistence import load_episode
-from flauschi_pipeline.vectorstore import get_vectorstore
+from flauschi_ai.chunker import Chunk, TurnBasedChunker
+from flauschi_ai.constants import EPISODE_PATH
+from flauschi_ai.models import Episode, ChunkMetadata
+from flauschi_ai.persistence import load_episode
+from flauschi_ai.vectorstore import get_vectorstore
 
 
 def _to_document(episode: Episode, chunk: Chunk) -> Document:

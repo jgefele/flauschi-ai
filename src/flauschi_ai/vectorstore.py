@@ -5,8 +5,8 @@ from langchain_qdrant import FastEmbedSparse, QdrantVectorStore, RetrievalMode
 from qdrant_client import QdrantClient
 from qdrant_client.models import Distance, Modifier, SparseVectorParams, VectorParams, PayloadSchemaType
 
-from flauschi_pipeline.constants import QDRANT_PATH
-from flauschi_pipeline.models import ChunkMetadata
+from flauschi_ai.constants import QDRANT_PATH
+from flauschi_ai.models import ChunkMetadata
 
 OPENROUTER_BASE_URL = "https://openrouter.ai/api/v1"
 CHUNK_METADATA_PUBLICATION_DATE = "publication_date"

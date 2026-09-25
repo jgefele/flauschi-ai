@@ -7,7 +7,7 @@ import click
 from langchain_core.messages import HumanMessage, SystemMessage, AIMessageChunk
 from langchain_openrouter import ChatOpenRouter
 
-from flauschi_pipeline.utils import CLICK_DATE_PARAM
+from flauschi_ai.utils import CLICK_DATE_PARAM
 from retrieve import retrieve
 
 

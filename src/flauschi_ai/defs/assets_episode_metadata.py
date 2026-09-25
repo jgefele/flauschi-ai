@@ -1,9 +1,9 @@
 import dagster as dg
 
-from flauschi_pipeline.constants import DEFAULT_FEED_URL
-from flauschi_pipeline.defs.common import episode_partition
-from flauschi_pipeline.feed import parse_feed
-from flauschi_pipeline.models.episode_metadata import EpisodeMetadata
+from flauschi_ai.constants import DEFAULT_FEED_URL
+from flauschi_ai.defs.common import episode_partition
+from flauschi_ai.feed import parse_feed
+from flauschi_ai.models.episode_metadata import EpisodeMetadata
 
 
 @dg.asset(

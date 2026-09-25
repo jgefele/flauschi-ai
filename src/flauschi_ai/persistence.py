@@ -1,6 +1,6 @@
 from pathlib import Path
 
-from flauschi_pipeline.models import Episode
+from flauschi_ai.models import Episode
 
 
 def load_episode(file: Path) -> Episode:

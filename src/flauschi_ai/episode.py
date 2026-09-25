@@ -1,6 +1,6 @@
 from datetime import timedelta
 
-from flauschi_pipeline.models import (
+from flauschi_ai.models import (
     AssemblyAiTranscript,
     AudioArchiveMetadata,
     Episode,
