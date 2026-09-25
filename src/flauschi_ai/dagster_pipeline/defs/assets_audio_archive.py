@@ -8,7 +8,7 @@ from botocore.response import StreamingBody
 from dagster_aws.s3 import S3Resource
 from types_boto3_s3 import S3Client
 
-from flauschi_ai.defs.common import episode_partition
+from .common import episode_partition
 from flauschi_ai.models import AudioArchiveMetadata, EpisodeMetadata
 
 

@@ -1,7 +1,7 @@
 import dagster as dg
 
 from flauschi_ai.constants import DEFAULT_FEED_URL
-from flauschi_ai.defs.common import episode_partition
+from .common import episode_partition
 from flauschi_ai.feed import parse_feed
 from flauschi_ai.models.episode_metadata import EpisodeMetadata
 

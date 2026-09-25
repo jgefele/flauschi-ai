@@ -1,6 +1,6 @@
 import dagster as dg
 
-from flauschi_ai.defs.common import episode_partition
+from .common import episode_partition
 from flauschi_ai.episode import export_episode
 from flauschi_ai.models import (
     AssemblyAiTranscript,

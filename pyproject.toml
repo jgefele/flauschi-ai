@@ -43,9 +43,9 @@ force-include = { "pyproject.toml" = "pyproject.toml" }
 directory_type = "project"
 
 [tool.dg.project]
-root_module = "flauschi_ai"
+root_module = "flauschi_ai.dagster_pipeline"
 registry_modules = [
-    "flauschi_ai.components.*",
+    "flauschi_ai.dagster_pipeline.components.*",
 ]
 
 

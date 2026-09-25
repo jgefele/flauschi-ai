@@ -4,8 +4,8 @@ from flauschi_ai.constants import (
     DEFAULT_FEED_URL,
     RSS_FEED_CHECK_INTERVAL_SECONDS,
 )
-from flauschi_ai.defs.assets_episode_metadata import episode_metadata
-from flauschi_ai.defs.common import episode_partition
+from .assets_episode_metadata import episode_metadata
+from .common import episode_partition
 from flauschi_ai.feed import parse_feed
 from flauschi_ai.models import EpisodeMetadata
 
