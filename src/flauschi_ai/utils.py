@@ -1,8 +1,6 @@
 import re
 import unicodedata
-from datetime import timedelta, date, datetime
-
-import click
+from datetime import timedelta
 
 
 def slugify(text: str, lower: bool = True, max_length: int | None = None) -> str:
@@ -44,17 +42,3 @@ def format_timecode(d: timedelta) -> str:
         return f"{hh:d}:{mm:02d}:{ss:02d}"
     else:
         return f"{mm:d}:{ss:02d}"
-
-
-class DateParamType(click.ParamType):
-    name = "date"
-
-    def convert(self, value, param, ctx) -> date | None:
-        if value is None or isinstance(value, date):
-            return value
-        try:
-            return datetime.strptime(value, "%Y-%m-%d").date()
-        except ValueError:
-            self.fail(f"'{value}' is not a valid date. Format must be YYYY-MM-DD.", param, ctx)
-
-CLICK_DATE_PARAM = DateParamType()

@@ -7,13 +7,15 @@ import click
 from langchain_core.messages import HumanMessage, SystemMessage, AIMessageChunk
 from langchain_openrouter import ChatOpenRouter
 
-from flauschi_ai.utils import CLICK_DATE_PARAM
-from retrieve import retrieve
+from flauschi_ai.cli.params import CLICK_DATE_PARAM
+from flauschi_ai.cli.utils import read_query
+from flauschi_ai.constants import DEFAULT_TOP_K
+from flauschi_ai.retrieve import retrieve
 
 
-@click.command()
+@click.command("rag")
 @click.argument("query", required=True)
-@click.option("--k", default=4)
+@click.option("--top_k", default=DEFAULT_TOP_K)
 @click.option(
     "--published-after",
     type=CLICK_DATE_PARAM,
@@ -24,15 +26,13 @@ from retrieve import retrieve
     type=CLICK_DATE_PARAM,
     default=None,
 )
-def main(query: str, k: int, published_after: date | None, published_before: date | None):
+def rag_command(query: str, top_k: int, published_after: date | None, published_before: date | None):
     """Answer questions for QUERY.
 
     QUERY is a search string. If QUERY is "-", the query is read from stdin.
     """
-    if query == "-":
-        query = "\n".join(sys.stdin.readlines())
-
-    docs, _scores = zip(*retrieve(query, k, published_after, published_before))
+    query = read_query(query)
+    docs, _scores = zip(*retrieve(query, top_k, published_after, published_before))
 
     model = ChatOpenRouter(
         model="z-ai/glm-5.3-flash",
@@ -61,7 +61,6 @@ def main(query: str, k: int, published_after: date | None, published_before: dat
         HumanMessage(query),
     )
 
-
     state: Literal['INIT'] | Literal['REASONING'] | Literal['ANSWER'] = 'INIT'
     full_response: AIMessageChunk | None = None
     for chunk in model.stream(messages):
@@ -89,7 +88,3 @@ def main(query: str, k: int, published_after: date | None, published_before: dat
         print("```json")
         print(json.dumps(full_response.response_metadata, indent=2))
         print("```")
-
-
-if __name__ == "__main__":
-    main()

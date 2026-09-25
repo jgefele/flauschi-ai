@@ -23,6 +23,9 @@ dependencies = [
     "universal-pathlib>=0.3.10",
 ]
 
+[project.scripts]
+flauschi-ai = "flauschi_ai.cli:cli"
+
 [dependency-groups]
 dev = [
     "dagster-dg-cli",

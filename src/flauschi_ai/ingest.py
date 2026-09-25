@@ -1,7 +1,6 @@
 import re
 from collections.abc import Generator
 
-import click
 from langchain_core.documents import Document
 from langchain_core.vectorstores import VectorStore
 
@@ -41,14 +40,8 @@ def load_episodes(pattern: str | None) -> Generator[Episode]:
         if f.is_file() and (pattern is None or re.search(pattern, f.name)):
             yield load_episode(f)
 
-
-@click.command()
-@click.option(
-    "--pattern",
-    default="2026.*",
-    help="Regex pattern for episode json files to index (default: 2026.*)",
-)
-def main(pattern: str):
+def ingest(pattern: str):
+    """Index episodes into the vector store."""
     vector_store = get_vectorstore()
     chunker = TurnBasedChunker.from_huggingface_tokenizer(
         model_name="Qwen/Qwen3-Embedding-8B",
@@ -56,8 +49,4 @@ def main(pattern: str):
         overlap_tokens_per_chunk=250,
     )
     for e in load_episodes(pattern):
-        _ids = index_episode(e, chunker, vector_store)
-
-
-if __name__ == "__main__":
-    main()
+        index_episode(e, chunker, vector_store)
