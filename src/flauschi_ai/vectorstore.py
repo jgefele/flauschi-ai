@@ -79,15 +79,20 @@ class FlauschiVectorStore:
             "overlap_tokens_per_chunk": self.overlap_tokens_per_chunk,
         }
 
+    def drop_collection_if_exists(self) -> bool:
+        client = QdrantClient(path=str(QDRANT_PATH))
+        if client.collection_exists(self.collection_name):
+            client.delete_collection(collection_name=self.collection_name)
+            return True
+        return False
+
     def _load(self) -> QdrantVectorStore:
         assert load_dotenv()
 
         client = QdrantClient(path=str(QDRANT_PATH))
         expected_metadata = self._collection_metadata()
 
-        if self.collection_name not in (
-            c.name for c in client.get_collections().collections
-        ):
+        if not client.collection_exists(self.collection_name):
             assert client.create_collection(
                 collection_name=self.collection_name,
                 vectors_config=VectorParams(
@@ -132,6 +137,8 @@ class FlauschiVectorStore:
             model=self.embedding_model,
             base_url=OPENROUTER_BASE_URL,
             api_key=secret_from_env("OPENROUTER_API_KEY")(),
+            # length check doesn't work with non-OpenAI embeddings via OpenRouter as it uses wrong tokenizer
+            check_embedding_ctx_length=True if self.embedding_model.startswith("openai/") else False,
         )
         return QdrantVectorStore(
             client=client,
