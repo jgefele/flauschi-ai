@@ -16,6 +16,7 @@ dependencies = [
     "langchain-openai>=1.6.3",
     "langchain-openrouter>=0.2.9",
     "langchain-qdrant>=1.1.0",
+    "langfuse>=4.15.6",
     "pydantic>=2.13.0",
     "tiktoken>=0.14.0",
     "transformers>=5.17.0",

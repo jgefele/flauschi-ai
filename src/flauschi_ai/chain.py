@@ -7,10 +7,9 @@ from langchain_core.prompts import ChatPromptTemplate
 from langchain_core.retrievers import RetrieverInput, RetrieverOutput
 from langchain_core.runnables import (
     RunnableConfig,
-    RunnableLambda,
     RunnableParallel,
     RunnablePassthrough,
-    RunnableSerializable,
+    Runnable,
 )
 from langchain_openrouter import ChatOpenRouter
 
@@ -36,17 +35,19 @@ def format_docs(documents: RetrieverOutput) -> str:
     return "\n".join(formatted_documents)
 
 
-def build_retriever_chain() -> RunnableSerializable[RetrieverInput, RetrieverOutput]:
+def build_retriever_chain() -> Runnable[RetrieverInput, RetrieverOutput]:
     flauschi_vector_store = FlauschiVectorStore.default()
     retriever = flauschi_vector_store.as_configurable_retriever()
     return retriever
 
 
-def build_formatted_retriever_chain() -> RunnableSerializable[RetrieverInput, str]:
-    return build_retriever_chain() | RunnableLambda(format_docs)
+def build_formatted_retriever_chain() -> Runnable[RetrieverInput, str]:
+    return (build_retriever_chain() | format_docs).with_config(
+        run_name="retrieve_context"
+    )
 
 
-def build_rag_chain() -> RunnableSerializable[RetrieverInput, AIMessage]:
+def build_rag_chain() -> Runnable[RetrieverInput, AIMessage]:
     retriever = build_formatted_retriever_chain()
 
     prompt = ChatPromptTemplate(
@@ -81,10 +82,12 @@ def build_rag_chain() -> RunnableSerializable[RetrieverInput, AIMessage]:
     model = ChatOpenRouter(model="z-ai/glm-5.3-flash", temperature=0)
 
     chain = (
-        RunnableParallel(context=retriever, query=RunnablePassthrough())
-        | prompt
-        | model
-    )
+        RunnableParallel(context=retriever, query=RunnablePassthrough()).with_config(
+            run_name="rag_answer_build_context"
+        )
+        | prompt.with_config(run_name="rag_answer_prompt")
+        | model.with_config(run_name="rag_answer_model")
+    ).with_config(run_name="rag_chain")
 
     return chain
 

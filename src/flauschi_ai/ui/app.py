@@ -1,8 +1,10 @@
 from datetime import date
 
 import streamlit as st
+from dotenv import load_dotenv
 from langchain_core.documents import Document
 
+from flauschi_ai.telemetry import setup_telemetry
 from flauschi_ai.models import ChunkMetadata
 from flauschi_ai.vectorstore import FlauschiVectorStore
 from flauschi_ai.utils import format_timecode
@@ -14,6 +16,15 @@ st.set_page_config(
 st.session_state.setdefault("results", None)
 st.session_state.setdefault("last_params", None)
 st.session_state.setdefault("searched", False)
+
+
+@st.cache_resource
+def init_app():
+    load_dotenv()
+    setup_telemetry()
+
+
+init_app()
 
 
 @st.cache_resource(show_spinner="Loading vector store…")

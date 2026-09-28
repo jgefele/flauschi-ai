@@ -3,7 +3,6 @@ from datetime import date
 from functools import cached_property
 from typing import cast
 
-from dotenv import load_dotenv
 from langchain_core.documents import Document
 from langchain_core.runnables import ConfigurableField
 from langchain_core.utils import secret_from_env
@@ -92,8 +91,6 @@ class FlauschiVectorStore:
         return False
 
     def _load(self) -> QdrantVectorStore:
-        assert load_dotenv()
-
         client = QdrantClient(path=str(QDRANT_PATH))
         expected_metadata = self._collection_metadata()
 
