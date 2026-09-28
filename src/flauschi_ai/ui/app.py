@@ -4,9 +4,9 @@ import streamlit as st
 from dotenv import load_dotenv
 from langchain_core.documents import Document
 
-from flauschi_ai.telemetry import setup_telemetry
+from flauschi_ai.chain import build_retriever_chain, build_runnable_config
 from flauschi_ai.models import ChunkMetadata
-from flauschi_ai.vectorstore import FlauschiVectorStore
+from flauschi_ai.telemetry import setup_telemetry
 from flauschi_ai.utils import format_timecode
 
 st.set_page_config(
@@ -28,15 +28,16 @@ init_app()
 
 
 @st.cache_resource(show_spinner="Loading vector store…")
-def get_vector_store() -> FlauschiVectorStore:
-    return FlauschiVectorStore.default()
+def get_retriever_chain():
+    return build_retriever_chain()
 
 
 @st.cache_data(ttl="1h", max_entries=100, show_spinner="Retrieving chunks…")
 def cached_retrieve(
     query: str, k: int, published_after: date | None, published_before: date | None
 ) -> list[Document]:
-    return get_vector_store().retrieve(query, k, published_after, published_before)
+    config = build_runnable_config(k, published_after, published_before)
+    return get_retriever_chain().invoke(query, config=config)
 
 
 st.title("Flauschi retrieval", icon=":material/mic:")
