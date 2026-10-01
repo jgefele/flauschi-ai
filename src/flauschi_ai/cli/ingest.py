@@ -1,7 +1,14 @@
 from flauschi_ai import constants
+from flauschi_ai.persistence import load_episodes
 from flauschi_ai.vectorstore import FlauschiVectorStore
 
 import click
+
+
+def ingest(vectorstore: FlauschiVectorStore, pattern: str):
+    """Index episodes into the vector store."""
+    for episode in load_episodes(pattern):
+        _ids = vectorstore.add_episode(episode)
 
 
 @click.command("ingest")
@@ -12,8 +19,7 @@ import click
 )
 def ingest_command(pattern: str):
     """Index episodes into the vector store."""
-    FlauschiVectorStore.default().ingest(pattern)
-
+    ingest(FlauschiVectorStore.default(), pattern)
 
 
 @click.command("ingest-test")
@@ -29,7 +35,9 @@ def ingest_command(pattern: str):
     "--overlap_tokens_per_chunk",
     default=constants.DEFAULT_OVERLAP_TOKENS_PER_CHUNK,
 )
-def ingest_test_command(pattern: str, max_tokens_per_chunk: int, overlap_tokens_per_chunk: int):
+def ingest_test_command(
+    pattern: str, max_tokens_per_chunk: int, overlap_tokens_per_chunk: int
+):
     vs = FlauschiVectorStore(
         collection_name="test",
         embedding_model="qwen/qwen3-embedding-8b",
@@ -37,7 +45,6 @@ def ingest_test_command(pattern: str, max_tokens_per_chunk: int, overlap_tokens_
         tokenization_model=constants.DEFAULT_TOKENIZATION_MODEL,
         max_tokens_per_chunk=max_tokens_per_chunk,
         overlap_tokens_per_chunk=overlap_tokens_per_chunk,
-
     )
     vs.drop_collection_if_exists()
-    vs.ingest(pattern)
+    ingest(vs, pattern)

@@ -185,7 +185,7 @@ class FlauschiVectorStore:
         )
         return Document(page_content=chunk.text, metadata=metadata.model_dump())
 
-    def _ingest_episode(self, episode: Episode) -> list[str]:
+    def add_episode(self, episode: Episode) -> list[str]:
         chunks = self._chunker.transcript_to_chunks(episode.transcript)
         print(
             f"Adding {len(chunks)} chunks from {episode.slug} to the vector store...",
@@ -195,11 +195,6 @@ class FlauschiVectorStore:
         ids = self.vector_store.add_documents(documents)
         print("done")
         return ids
-
-    def ingest(self, pattern: str):
-        """Index episodes into the vector store."""
-        for episode in load_episodes(pattern):
-            self._ingest_episode(episode)
 
     @staticmethod
     def build_filter(
