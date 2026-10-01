@@ -206,6 +206,8 @@ class FlauschiVectorStore:
         published_after: date | None,
         published_before: date | None,
     ):
+        if not (published_after or published_before):
+            return None
         return Filter(
             must=[
                 FieldCondition(
