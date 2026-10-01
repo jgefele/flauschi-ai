@@ -1,4 +1,5 @@
 import logging
+import os
 from datetime import date
 from functools import cached_property
 from typing import cast
@@ -84,14 +85,22 @@ class FlauschiVectorStore:
             "overlap_tokens_per_chunk": self.overlap_tokens_per_chunk,
         }
 
+    @staticmethod
+    def _create_client():
+        if endpoint_url := os.environ.get("QDRANT_ENDPOINT_URL"):
+            api_key = os.environ["QDRANT_API_KEY"]
+            return QdrantClient(url=endpoint_url, api_key=api_key)
+        else:
+            return QdrantClient(path=str(QDRANT_PATH))
+
     def drop_collection_if_exists(self) -> bool:
-        client = QdrantClient(path=str(QDRANT_PATH))
+        client = self._create_client()
         if client.collection_exists(self.collection_name):
             return client.delete_collection(collection_name=self.collection_name)
         return False
 
     def _load(self) -> QdrantVectorStore:
-        client = QdrantClient(path=str(QDRANT_PATH))
+        client = self._create_client()
         expected_metadata = self._collection_metadata()
 
         if not client.collection_exists(self.collection_name):
