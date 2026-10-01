@@ -11,6 +11,6 @@ def load_episode(file: Path) -> Episode:
 
 
 def load_episodes(pattern: str | None) -> Generator[Episode]:
-    for f in EPISODE_PATH.glob("*.json"):
+    for f in sorted(EPISODE_PATH.glob("*.json")):
         if f.is_file() and (pattern is None or re.search(pattern, f.name)):
             yield load_episode(f)
