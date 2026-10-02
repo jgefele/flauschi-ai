@@ -1,6 +1,6 @@
 from datetime import timedelta
 
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, Field, AliasChoices
 
 from flauschi_ai.models.episode_metadata import EpisodeMetadata
 
@@ -30,7 +30,7 @@ class EpisodeSpeakerTurn(BaseModel):
 
 class EpisodeTranscript(BaseModel):
     speakers: dict[int, str]
-    speaker_turns: list[EpisodeSpeakerTurn] = Field(validation_alias="speaker_blocks")
+    speaker_turns: list[EpisodeSpeakerTurn] = Field(validation_alias=AliasChoices("speaker_turns", "speaker_blocks"))
 
 
 class Episode(EpisodeMetadata):
