@@ -1,9 +1,10 @@
 import dagster as dg
 from pydantic import BaseModel
 
-from .common import episode_partition
 from flauschi_ai.models import Episode
+
 from ...vectorstore import FlauschiVectorStore
+from .common import episode_partition, on_missing_with_unlimited_backfill
 
 
 class IdList(BaseModel):
@@ -12,11 +13,7 @@ class IdList(BaseModel):
 
 @dg.asset(
     partitions_def=episode_partition,
-    automation_condition=dg.AutomationCondition.on_missing().replace(
-        "handled",
-        dg.AutomationCondition.newly_requested()
-        | dg.AutomationCondition.newly_updated(),
-    ),
+    automation_condition=on_missing_with_unlimited_backfill,
 )
 def vector_database(
     episode: Episode,

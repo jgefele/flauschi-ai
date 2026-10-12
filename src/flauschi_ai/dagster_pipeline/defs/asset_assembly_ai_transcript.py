@@ -2,22 +2,19 @@ import assemblyai
 import dagster as dg
 from assemblyai.prerecorded.v2.transcript import Transcript
 
-from .common import episode_partition
-from .resources import AssemblyAIResource
 from flauschi_ai.models import (
     AssemblyAiTranscript,
     AudioArchiveMetadata,
 )
 
+from .common import episode_partition, on_missing_with_unlimited_backfill
+from .resources import AssemblyAIResource
+
 
 @dg.asset(
     pool="assembly_ai_api",
     partitions_def=episode_partition,
-    automation_condition=dg.AutomationCondition.on_missing().replace(
-        "handled",
-        dg.AutomationCondition.newly_requested()
-        | dg.AutomationCondition.newly_updated(),
-    ),
+    automation_condition=on_missing_with_unlimited_backfill,
 )
 def assembly_ai_transcript(
     context: dg.AssetExecutionContext,

@@ -8,8 +8,9 @@ from botocore.response import StreamingBody
 from dagster_aws.s3 import S3Resource
 from types_boto3_s3 import S3Client
 
-from .common import episode_partition
 from flauschi_ai.models import AudioArchiveMetadata, EpisodeMetadata
+
+from .common import episode_partition, on_missing_with_unlimited_backfill
 
 
 def _content_length(response: requests.Response) -> int | None:
@@ -83,11 +84,7 @@ def archive_url_to_s3(
 @dg.asset(
     pool="large_s3_upload",
     partitions_def=episode_partition,
-    automation_condition=dg.AutomationCondition.on_missing().replace(
-        "handled",
-        dg.AutomationCondition.newly_requested()
-        | dg.AutomationCondition.newly_updated(),
-    ),
+    automation_condition=on_missing_with_unlimited_backfill,
 )
 def audio_archive(
     context: dg.AssetExecutionContext,

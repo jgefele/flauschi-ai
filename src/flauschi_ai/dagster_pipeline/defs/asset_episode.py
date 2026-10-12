@@ -1,6 +1,5 @@
 import dagster as dg
 
-from .common import episode_partition
 from flauschi_ai.episode import export_episode
 from flauschi_ai.models import (
     AssemblyAiTranscript,
@@ -9,14 +8,12 @@ from flauschi_ai.models import (
     EpisodeMetadata,
 )
 
+from .common import episode_partition, on_missing_with_unlimited_backfill
+
 
 @dg.asset(
     partitions_def=episode_partition,
-    automation_condition=dg.AutomationCondition.on_missing().replace(
-        "handled",
-        dg.AutomationCondition.newly_requested()
-        | dg.AutomationCondition.newly_updated(),
-    ),
+    automation_condition=on_missing_with_unlimited_backfill,
 )
 def episode(
     episode_metadata: EpisodeMetadata,
