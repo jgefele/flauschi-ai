@@ -4,6 +4,7 @@ import assemblyai as aai
 import dagster as dg
 from dagster_aws.s3 import S3Resource
 from pydantic import BaseModel
+from pydantic.v1 import BaseModel as BaseModel_v1
 from upath import UPath
 
 from flauschi_ai.constants import DATA_PATH
@@ -19,35 +20,33 @@ class PydanticUPathIOManager(dg.UPathIOManager):
     # Required: must contain a "." (asserted in UPathIOManager.__init__)
     extension: str = ".json"
 
-    def _resolve_model_type(
-        self, context: dg.InputContext | dg.OutputContext
-    ) -> type[BaseModel] | None:
-        dagster_type = context.dagster_type.typing_type
-
-        if isinstance(dagster_type, type) and issubclass(dagster_type, BaseModel):
-            return dagster_type
-        return None
-
     def dump_to_path(self, context: dg.OutputContext, obj: Any, path: UPath) -> None:
-        if not isinstance(obj, BaseModel):
+        if isinstance(obj, BaseModel):
+            model_json = obj.model_dump_json(exclude_defaults=True)
+        elif isinstance(obj, BaseModel_v1):
+            model_json = obj.json(exclude_defaults=True)
+        else:
             raise TypeError(
                 f"PydanticUPathIOManager expected a pydantic BaseModel, got {type(obj)}. "
                 + "Set the asset's return type annotation to `None` if it produces no value."
             )
-        path.write_text(
-            obj.model_dump_json(exclude_defaults=True),
-            encoding="utf-8",
-        )
+        
+        path.write_text(model_json, encoding="utf-8")
 
     def load_from_path(self, context: dg.InputContext, path: UPath) -> Any:
-        model_type = self._resolve_model_type(context)
-        if model_type is None:
-            raise TypeError(
-                "Could not resolve a pydantic model type from the upstream annotation. "
-                + "Annotate the upstream asset with `-> MyModel` or `-> Optional[MyModel]`."
-            )
+        model_json = path.read_text(encoding="utf-8")
 
-        return model_type.model_validate_json(path.read_text(encoding="utf-8"))
+        model_type = context.dagster_type.typing_type
+        if isinstance(model_type, type):
+            if issubclass(model_type, BaseModel):
+                return model_type.model_validate_json(model_json)
+            elif issubclass(model_type, BaseModel_v1):
+                return model_type.parse_raw(model_json)
+        raise TypeError(
+            "Could not resolve a pydantic model type from the upstream annotation. "
+            + "Annotate the upstream asset with `-> MyModel` or `-> Optional[MyModel]`."
+        )
+        
 
     def get_metadata(
         self, context: dg.OutputContext, obj: Any
