@@ -1,3 +1,6 @@
+import hashlib
+import json
+
 import dagster as dg
 
 from flauschi_ai.constants import (
@@ -20,20 +23,23 @@ def rss_feed_sensor(context: dg.SensorEvaluationContext):
     context.log.info("querying feed with cursor Last-Modified: %s", last_modified)
 
     all_episodes, new_last_modified = parse_feed(DEFAULT_FEED_URL, last_modified)
-    if not all_episodes and last_modified == new_last_modified:
+    if not all_episodes and (
+        last_modified == new_last_modified or new_last_modified is None
+    ):
         return dg.SkipReason(f"Not modified since: {last_modified}")
     context.log.info("total number of episodes: %s", len(all_episodes))
 
     backfill_episodes = all_episodes[:10]
 
-    def _run_key(e: EpisodeMetadata) -> dg.RunRequest:
+    def _run_request(e: EpisodeMetadata) -> dg.RunRequest:
+        payload = json.dumps(e.model_dump(mode="json"), sort_keys=True)
         return dg.RunRequest(
             partition_key=e.slug,
-            run_key=str(hash(tuple(sorted(e.model_dump().items())))),
+            run_key=hashlib.sha256(payload.encode()).hexdigest(),
         )
 
     return dg.SensorResult(
-        run_requests=[_run_key(e) for e in backfill_episodes],
+        run_requests=[_run_request(e) for e in backfill_episodes],
         dynamic_partitions_requests=[
             episode_partition.build_add_request([e.slug for e in all_episodes])
         ],

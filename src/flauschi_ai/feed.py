@@ -28,7 +28,7 @@ def _get_audio_url(entry) -> str:
 
 def parse_feed(
     url: str, last_modified: str | None
-) -> tuple[list[EpisodeMetadata], str]:
+) -> tuple[list[EpisodeMetadata], str | None]:
     feed = feedparser.parse(url, modified=last_modified)
 
     episodes = (
