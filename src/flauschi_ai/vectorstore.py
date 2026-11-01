@@ -180,6 +180,7 @@ class FlauschiVectorStore:
         metadata = ChunkMetadata(
             publication_date=episode.publication_date,
             title=episode.title,
+            spotify_id=episode.spotify_id,
             start=chunk.start,
             end=chunk.end,
         )

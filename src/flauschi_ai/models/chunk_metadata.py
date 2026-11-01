@@ -24,5 +24,6 @@ TimedeltaAsTotalSecondsInt = Annotated[
 class ChunkMetadata(BaseModel):
     publication_date: date
     title: str
+    spotify_id: str
     start: TimedeltaAsTotalSecondsInt
     end: TimedeltaAsTotalSecondsInt

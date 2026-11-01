@@ -1,5 +1,6 @@
 from datetime import date
 
+from langchain_core.documents import Document
 from langchain_core.messages import (
     AIMessage,
 )
@@ -17,12 +18,24 @@ from flauschi_ai.models import ChunkMetadata
 from flauschi_ai.utils import format_timecode, slugify
 from flauschi_ai.vectorstore import FlauschiVectorStore
 
+DOCUMENT_ID_LENGTH = 30
+
+
+def chunk_metadata(document: Document) -> ChunkMetadata:
+    return ChunkMetadata.model_validate(document.metadata)
+
+
+def document_id(metadata: ChunkMetadata) -> str:
+    return slugify(metadata.publication_date.isoformat(), metadata.title)[
+        :DOCUMENT_ID_LENGTH
+    ]
+
 
 def format_docs(documents: RetrieverOutput) -> str:
     formatted_documents: list[str] = []
     for document in documents:
-        metadata = ChunkMetadata.model_validate(document.metadata)
-        doc_id = slugify(metadata.publication_date.isoformat(), metadata.title[:20])
+        metadata = chunk_metadata(document)
+        doc_id = document_id(metadata)
         formatted_documents.append(
             f'<document id="{doc_id}" '
             + f'clipStart="{format_timecode(metadata.start)}" '

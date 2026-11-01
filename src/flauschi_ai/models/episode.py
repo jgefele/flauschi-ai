@@ -39,3 +39,6 @@ class Episode(EpisodeMetadata):
     audio_archive_url: str
 
     duration_with_ads: timedelta
+
+    spotify_id: str
+    spotify_duration: timedelta

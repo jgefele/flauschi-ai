@@ -6,6 +6,7 @@ from flauschi_ai.models import (
     AudioArchiveMetadata,
     Episode,
     EpisodeMetadata,
+    SpotifyEpisodeMetadata,
 )
 
 from .common import episode_partition, on_missing_with_unlimited_backfill
@@ -19,5 +20,8 @@ def episode(
     episode_metadata: EpisodeMetadata,
     audio_archive: AudioArchiveMetadata,
     assembly_ai_transcript: AssemblyAiTranscript,
+    spotify_episode_metadata: SpotifyEpisodeMetadata,
 ) -> Episode:
-    return export_episode(episode_metadata, audio_archive, assembly_ai_transcript)
+    return export_episode(
+        episode_metadata, audio_archive, assembly_ai_transcript, spotify_episode_metadata
+    )

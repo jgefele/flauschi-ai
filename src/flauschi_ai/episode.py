@@ -8,6 +8,7 @@ from flauschi_ai.models import (
     EpisodeSentence,
     EpisodeSpeakerTurn,
     EpisodeTranscript,
+    SpotifyEpisodeMetadata,
 )
 
 
@@ -15,6 +16,7 @@ def export_episode(
     metadata: EpisodeMetadata,
     audio_archive: AudioArchiveMetadata,
     transcript: AssemblyAiTranscript,
+    spotify_metadata: SpotifyEpisodeMetadata,
 ) -> Episode:
     try:
         speaker_mapping: dict[str, str] = (
@@ -64,6 +66,8 @@ def export_episode(
         duration=metadata.duration,
         duration_with_ads=timedelta(seconds=transcript.audio_duration or 0),
         audio_archive_url=audio_archive.archive_url,
+        spotify_id=spotify_metadata.id,
+        spotify_duration=spotify_metadata.duration,
         transcript=EpisodeTranscript(
             speakers=speakers,
             speaker_turns=speaker_turns,

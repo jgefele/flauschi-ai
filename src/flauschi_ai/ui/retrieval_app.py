@@ -4,8 +4,11 @@ import streamlit as st
 from dotenv import load_dotenv
 from langchain_core.documents import Document
 
-from flauschi_ai.chain import build_retriever_chain, build_runnable_config
-from flauschi_ai.models import ChunkMetadata
+from flauschi_ai.chain import (
+    build_retriever_chain,
+    build_runnable_config,
+    chunk_metadata,
+)
 from flauschi_ai.telemetry import setup_telemetry
 from flauschi_ai.utils import format_timecode
 
@@ -120,7 +123,7 @@ if not results:
 with results_slot:
     st.subheader(f"{len(results)} chunks", icon=":material/article:")
     for rank, document in enumerate(results, start=1):
-        metadata = ChunkMetadata.model_validate(document.metadata)
+        metadata = chunk_metadata(document)
         with st.container(border=True):
             st.markdown(f"#### {rank}. {metadata.title}")
             st.caption(
