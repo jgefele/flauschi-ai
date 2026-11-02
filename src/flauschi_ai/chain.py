@@ -39,7 +39,7 @@ def format_docs(documents: RetrieverOutput) -> str:
         formatted_documents.append(
             f'<document id="{doc_id}" '
             + f'clipStart="{format_timecode(metadata.start)}" '
-            + f'clipEnd="{format_timecode(metadata.end)}"  '
+            + f'clipEnd="{format_timecode(metadata.end)}" '
             + f'title="{metadata.title}" '
             + f'publication-date="{metadata.publication_date.isoformat()}">\n'
             + document.page_content
@@ -137,20 +137,26 @@ one, give:
 - the date (from `publication-date`), in the customary format of the answer
   language (German: DD.MM.YYYY)
 - the timecode: the `clipStart` value, unchanged, as a Markdown link
-  [mm:ss](#id) or [hh:mm:ss](#id), where `id` is copied exactly from the
-  document
+  [mm:ss](#id) or [hh:mm:ss](#id), where `id` is COPIED EXACTLY from the
+  <document>
 
 `clipStart` marks where the excerpt begins, not the exact position of a
 passage. Word it accordingly ("in der Episode ab [44:09](#id)") and never
-estimate a more precise timecode. Never invent timecodes or IDs.
+estimate a more precise timecode. NEVER invent timecodes.
+
+An `id` identifies an *episode*, not a single excerpt. Several <document>
+excerpts can share the same `id` (different clips from the same episode).
+This is expected and correct.
+
+Ids are opaque strings. ALWAYS copy them verbatim character for character
+from the `id` attribute. NEVER append numbers or suffixes (e.g. -1, -2), NEVER
+shorten, translate or otherwise modify them.
 </citation_rules>
 
 
 <example>
-Die Stelle findest du in der Folge „<title>" vom <publication-date in the
-customary format of the answer language>, ab [<clipStart>](#<id>). Später
-ab etwa [<anotherClipStart>](#<id>) reden die beiden noch einmal ausführlicher
-darüber.
+Die Stelle findest du in der Folge „About You" vom 06.05.2018, ab [48:15](#2018-05-06-about-you).
+Später ab etwa [1:15:23](#2018-05-06-about-you) reden die beiden noch einmal ausführlicher darüber.
 </example>
 
 <context>
